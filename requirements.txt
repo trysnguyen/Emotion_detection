@@ -1,7 +1,1 @@
-opencv_python
-Keras
-pandas
-numpy
-imutils
-scikit_learn
-matplotlib
+opencv_python keras pandas numpy imutils scikit_learn matplotlib tensorflow==2.16.1

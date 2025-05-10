@@ -3,29 +3,27 @@ import imutils
 import cv2
 from keras.models import load_model
 import numpy as np
+from database import insert_emotion
 
-# parameters for loading data and images
+# vài cái đường dẫn lấy models, à cái đống đó kiếm trên mạng ấy
 detection_model_path = 'haarcascade_files/haarcascade_frontalface_default.xml'
 emotion_model_path = 'models/_mini_XCEPTION.102-0.66.hdf5'
 
-# hyper-parameters for bounding boxes shape
-# loading models
+# mới nghĩ được 7 cái biểu cảm đó, ít thôi cả
 face_detection = cv2.CascadeClassifier(detection_model_path)
 emotion_classifier = load_model(emotion_model_path, compile=False)
 EMOTIONS = ["angry" ,"disgust","scared", "happy", "sad", "surprised",
  "neutral"]
 
-
+# dùng image thì uncommand đống này
 #feelings_faces = []
 #for index, emotion in enumerate(EMOTIONS):
    # feelings_faces.append(cv2.imread('emojis/' + emotion + '.png', -1))
 
-# starting video streaming
 cv2.namedWindow('your_face')
 camera = cv2.VideoCapture(0)
 while True:
     frame = camera.read()[1]
-    #reading the frame
     frame = imutils.resize(frame,width=300)
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     faces = face_detection.detectMultiScale(gray,scaleFactor=1.1,minNeighbors=5,minSize=(30,30),flags=cv2.CASCADE_SCALE_IMAGE)
@@ -36,8 +34,6 @@ while True:
         faces = sorted(faces, reverse=True,
         key=lambda x: (x[2] - x[0]) * (x[3] - x[1]))[0]
         (fX, fY, fW, fH) = faces
-                    # Extract the ROI of the face from the grayscale image, resize it to a fixed 28x28 pixels, and then prepare
-            # the ROI for classification via the CNN
         roi = gray[fY:fY + fH, fX:fX + fW]
         roi = cv2.resize(roi, (64, 64))
         roi = roi.astype("float") / 255.0
@@ -48,16 +44,15 @@ while True:
         preds = emotion_classifier.predict(roi)[0]
         emotion_probability = np.max(preds)
         label = EMOTIONS[preds.argmax()]
+
+        insert_emotion(label, float(emotion_probability))
     else: continue
 
  
     for (i, (emotion, prob)) in enumerate(zip(EMOTIONS, preds)):
-                # construct the label text
                 text = "{}: {:.2f}%".format(emotion, prob * 100)
 
-                # draw the label + probability bar on the canvas
-               # emoji_face = feelings_faces[np.argmax(preds)]
-
+                # màu sắc tôi đặt bừa vậy, ông thấy màu nào đẹp hơn đổi đi rồi commit lại sau
                 
                 w = int(prob * 300)
                 cv2.rectangle(canvas, (7, (i * 35) + 5),
@@ -69,6 +64,9 @@ while True:
                 cv2.FONT_HERSHEY_SIMPLEX, 0.45, (0, 0, 255), 2)
                 cv2.rectangle(frameClone, (fX, fY), (fX + fW, fY + fH),
                               (0, 0, 255), 2)
+
+# cái vòng lặp dưới này lỗi mà tôi fix mệt quá nên command lại cho nó khỏe, fix được thì fix dùm tôi
+
 #    for c in range(0, 3):
 #        frame[200:320, 10:130, c] = emoji_face[:, :, c] * \
 #        (emoji_face[:, :, 3] / 255.0) + frame[200:320,

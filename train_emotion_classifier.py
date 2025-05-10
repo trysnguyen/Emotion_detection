@@ -1,6 +1,4 @@
-"""
-Description: Train emotion classification model
-"""
+# cái file này kiếm bừa trên mạng đấy, tôi ko biết train model còn nếu ông biết thì cứ train
 
 from keras.callbacks import CSVLogger, ModelCheckpoint, EarlyStopping
 from keras.callbacks import ReduceLROnPlateau
@@ -40,7 +38,6 @@ model.summary()
 
 
 
-    # callbacks
 log_file_path = base_path + '_emotion_training.log'
 csv_logger = CSVLogger(log_file_path, append=False)
 early_stop = EarlyStopping('val_loss', patience=patience)
@@ -52,7 +49,6 @@ model_checkpoint = ModelCheckpoint(model_names, 'val_loss', verbose=1,
                                                     save_best_only=True)
 callbacks = [model_checkpoint, csv_logger, early_stop, reduce_lr]
 
-# loading dataset
 faces, emotions = load_fer2013()
 faces = preprocess_input(faces)
 num_samples, num_classes = emotions.shape
@@ -62,3 +58,5 @@ model.fit_generator(data_generator.flow(xtrain, ytrain,
                         steps_per_epoch=len(xtrain) / batch_size,
                         epochs=num_epochs, verbose=1, callbacks=callbacks,
                         validation_data=(xtest,ytest))
+
+# nếu có nhu cầu thì train lại dùm tôi nha

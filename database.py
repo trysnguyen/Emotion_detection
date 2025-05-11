@@ -27,3 +27,5 @@ def fetch_all_emotions():
 # ko dùng thì thôi, cho nó ngắt
 def close_connection():
     conn.close()
+
+insert_emotion('happy', 0.95)

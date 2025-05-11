@@ -12,7 +12,7 @@ emotion_model_path = 'models/_mini_XCEPTION.102-0.66.hdf5'
 # mới nghĩ được 7 cái biểu cảm đó, ít thôi cả
 face_detection = cv2.CascadeClassifier(detection_model_path)
 emotion_classifier = load_model(emotion_model_path, compile=False)
-EMOTIONS = ["angry" ,"disgust","scared", "happy", "sad", "surprised",
+EMOTIONS = ["angry" ,"disgust","surprised", "happy", "sad", "scared",
  "neutral"]
 
 # dùng image thì uncommand đống này
@@ -27,7 +27,7 @@ while True:
     frame = imutils.resize(frame,width=300)
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     faces = face_detection.detectMultiScale(gray,scaleFactor=1.1,minNeighbors=5,minSize=(30,30),flags=cv2.CASCADE_SCALE_IMAGE)
-    
+
     canvas = np.zeros((250, 300, 3), dtype="uint8")
     frameClone = frame.copy()
     if len(faces) > 0:
@@ -39,8 +39,8 @@ while True:
         roi = roi.astype("float") / 255.0
         roi = img_to_array(roi)
         roi = np.expand_dims(roi, axis=0)
-        
-        
+
+
         preds = emotion_classifier.predict(roi)[0]
         emotion_probability = np.max(preds)
         label = EMOTIONS[preds.argmax()]
@@ -48,12 +48,12 @@ while True:
         insert_emotion(label, float(emotion_probability))
     else: continue
 
- 
+
     for (i, (emotion, prob)) in enumerate(zip(EMOTIONS, preds)):
                 text = "{}: {:.2f}%".format(emotion, prob * 100)
 
                 # màu sắc tôi đặt bừa vậy, ông thấy màu nào đẹp hơn đổi đi rồi commit lại sau
-                
+
                 w = int(prob * 300)
                 cv2.rectangle(canvas, (7, (i * 35) + 5),
                 (w, (i * 35) + 35), (0, 0, 255), -1)

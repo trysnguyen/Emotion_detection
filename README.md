@@ -1,4 +1,4 @@
-Ông tải hết cái đống file trong requirement cho tôi thì nó mới chạy
+Ông tải hết cái đống file trong requirements cho tôi thì nó mới chạy
 
 cái phần matplotlib ngon lành rồi
 
